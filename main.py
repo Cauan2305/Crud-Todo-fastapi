@@ -1,9 +1,12 @@
 from fastapi import FastAPI
+
 from app.routers.v1.users import router as users_router
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
+
 from app.core.db.mongo_db import DbErrorOperations
 from pydantic import ValidationError
+
 app = FastAPI(
     title="TODO API",
     description="API For TODO Tasks .",

@@ -1,21 +1,45 @@
-from app.core.users.models import Users,UserCreate
+from app.core.users.models import UsersEntity,UserUpdate
 from app.core.db.mongo_db import Database
 from app.core.utils.system_hash import SystemHash
 from fastapi import HTTPException
+from bson import ObjectId
+from datetime import datetime
 class UsersService:
 
     def __init__(self) -> None:
         self.database=Database("AppTodo")
         self.system_hash=SystemHash()
-    def create(self,user:UserCreate)->Users:
-        data_duplicated=self.database.find("users",{"email":user.email})   
+
+    def create(self,user:UsersEntity)->UsersEntity:
+        data_duplicated=self.database.find("users",{"email":user.email,"status":{"$nin":['deleted']}})   
         if data_duplicated:
             raise HTTPException(detail="This Email Is Already Registered",status_code=400)
         
-        password_hashed=self.system_hash.encrypt_password(user.password)
-        user.password=password_hashed
-        result=self.database.insert("users",user.model_dump())
-        user=user.model_dump() 
-        del user['password']
+        user.password=self.system_hash.encrypt_password(user.password)
+        user=user.model_dump(exclude_none=True)
+
+        user['creation_date']=datetime.now().isoformat()
+        user['status']="enabled"
+        result=self.database.insert("users",user)
         user["id"]=str(result)
-        return user
+        return UsersEntity(**user).model_dump(exclude_none=True)
+    
+    def update(self,user:UserUpdate)->UserUpdate:
+        if user.password:
+            password_hashed=self.system_hash.encrypt_password(user.password)
+            user.password=password_hashed
+        
+        self.database.update("users",{"_id":ObjectId(user.id),"status":{"$nin":["deleted"]}},user.model_dump(exclude_none=True))
+        user=user.model_dump(exclude_none=True)
+        user['last_time_updated']=datetime.now().isoformat()
+        
+        return UserUpdate(**user).model_dump(exclude_none=True)
+    
+    def get(self,user_id:str)->UsersEntity:
+        result=self.database.find("users",{"_id":ObjectId(user_id),"status":{"$nin":["deleted"]}})
+        if not result:
+            raise HTTPException(status_code=404,detail="User Id Not Found")
+        return [UsersEntity(**document).model_dump(exclude={'password'},exclude_none=True) for document in result if document][0]
+    
+    def delete(self,user_id:str)->bool:
+        self.database.update("users",{"_id":ObjectId(user_id),"status":{"$nin":["deleted"]}},{"status":"deleted"})

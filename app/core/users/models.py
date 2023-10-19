@@ -1,22 +1,48 @@
-from pydantic import BaseModel,Field,EmailStr
+from pydantic import BaseModel,Field,EmailStr,ConfigDict,validator
 from typing import Optional,Literal
+from bson import ObjectId
 
-class Users(BaseModel):
+class UsersEntity(BaseModel):
+    id:Optional[ObjectId]=Field(alias='_id')
+    name:str
+    email:EmailStr
+    password:str
+    creation_date:Optional[str]=None
+    last_time_update:Optional[str]=None
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+
+    @validator('id')
+    def validate(cls, v):
+        if type(v) is ObjectId:
+            return str(v)
+        return v
+
+    
+class UserCreate(BaseModel):
     name:str
     email:EmailStr
     password:str
 
-class UserCreate(Users):
-    status:str='enabled'
+class UserUpdate(BaseModel):
+    id:str
+    status:Optional[Literal['enabled','disabled']]='enabled'
+    name:str
+    password:Optional[str]=None
     
 
-
-class UserUpdate(Users):
-    id:str=Field(alias="_id")
-    status:Literal['enabled','disabled','deleted']
-    # last_time_updated:Optional[str]=None
-
-class UsersResponse(BaseModel):
+class UsersResponseCreate(BaseModel):
     name:str
     email:EmailStr
     id:str
+    creation_date:Optional[str]=None
+
+class UsersResponseUpdate(BaseModel):
+    name:str
+    id:str
+    creation_date:Optional[str]=None
+    last_time_update:Optional[str]=None
+    status:Optional[Literal['enabled','disabled']]=None
+
+
+    
