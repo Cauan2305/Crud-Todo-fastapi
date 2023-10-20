@@ -4,3 +4,4 @@ pymongo
 bcrypt
 email-validator
 uvicorn
+pyjwt

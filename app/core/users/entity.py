@@ -9,4 +9,6 @@ class Users(BaseModel):
     status:Optional[Literal['enabled','disabled','deleted']]='enabled'
     last_time_updated:Optional[str]=None
     creation_date:Optional[str]=None
+    class Config:
+        arbitrary_types_allowed=True
     
