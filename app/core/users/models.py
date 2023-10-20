@@ -25,7 +25,6 @@ class UserCreate(BaseModel):
     password:str
 
 class UserUpdate(BaseModel):
-    id:str
     status:Optional[Literal['enabled','disabled']]='enabled'
     name:str
     password:Optional[str]=None
@@ -39,7 +38,6 @@ class UsersResponseCreate(BaseModel):
 
 class UsersResponseUpdate(BaseModel):
     name:str
-    id:str
     creation_date:Optional[str]=None
     last_time_update:Optional[str]=None
     status:Optional[Literal['enabled','disabled']]=None

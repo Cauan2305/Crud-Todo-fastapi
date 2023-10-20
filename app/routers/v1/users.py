@@ -1,7 +1,9 @@
 from fastapi import APIRouter,status,Depends
 from app.core.users.models import UserUpdate,UserCreate,UsersResponseCreate,UsersResponseUpdate
 from app.core.users.service import UsersService
-from app.routers.validators.query_param import validate_user_id
+from app.routers.validators.validators import validate_token
+
+
 
 router = APIRouter(prefix="/v1")
 service=UsersService()
@@ -12,18 +14,18 @@ async def create(payload:UserCreate):
 
 
 @router.put("/",response_model=UsersResponseUpdate,response_model_exclude_none=True)
-async def update(payload:UserUpdate):
-    result=service.update(payload)
+async def update(payload:UserUpdate,user_id:str=Depends(validate_token)):
+    result=service.update(payload,user_id)
     if not result:
         return status.HTTP_304_NOT_MODIFIED
     return result
 
-@router.get("/{user_id}",response_model=UsersResponseCreate,response_model_exclude_none=True)
-async def get(user_id:str=Depends(validate_user_id)):
+@router.get("/",response_model=UsersResponseCreate,response_model_exclude_none=True)
+async def get(user_id:str=Depends(validate_token)):
     result=service.get(user_id)
     return result
 
 
-@router.delete("/{user_id}",status_code=status.HTTP_204_NO_CONTENT)
-async def get(user_id:str=Depends(validate_user_id)):
+@router.delete("/",status_code=status.HTTP_204_NO_CONTENT)
+async def get(user_id:str=Depends(validate_token)):
     service.delete(user_id)
