@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 from app.core.db.interface import DatabaseInterface
-from pymongo import MongoClient
+from pymongo import MongoClient,ASCENDING,DESCENDING
 from config import credentials
 
 from typing import Dict,List,Optional
@@ -17,13 +17,16 @@ class Database(DatabaseInterface):
         return result.inserted_id
     
 
-    def update(self, table_name: str, query: dict, data: dict,upsert:bool=False) -> bool:
-        result=self._db_client[table_name].update_one(query,{'$set':data},upsert)
-        if result.matched_count <1:
+    def update(self, table_name: str, query: dict, data: dict,upsert:bool=False) -> dict:
+        result=self._db_client[table_name].find_one_and_update(query,{'$set':data},upsert=upsert)
+        if not result:
             raise DbErrorOperations("Id Not Found")
-        return True
+        return result
     
-    def find(self, table_name: str, query: dict) -> List[Dict] | None:
+    def find(self, table_name: str, query: dict,sort:list[tuple]=None) -> List[Dict] | None:
+        if sort:
+            return list(self._db_client[table_name].find(query).sort(sort))
+
         return list(self._db_client[table_name].find(query))
 
 class DbErrorOperations(Exception):

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from app.routers.v1.users import router as users_router
 from app.routers.v1.authentication import router as auth_router
-
+from app.routers.v1.tasks import router as tasks_router
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 
@@ -85,6 +85,8 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 app.include_router(users_router,prefix="/user",tags=["Users"])
 app.include_router(auth_router,prefix="/auth",tags=["Authentication"])
+app.include_router(tasks_router,prefix="/tasks",tags=["Tasks"])
+
 
 
 @app.get("/", status_code=status.HTTP_200_OK)

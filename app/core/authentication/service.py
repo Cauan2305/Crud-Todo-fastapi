@@ -3,7 +3,7 @@ from app.core.db.mongo_db import Database
 from app.core.utils.system_hash import SystemHash
 from app.core.authentication.models import AuthLogin
 from app.core.users.service import UsersService
-from app.core.authentication.token import Token
+from app.core.authentication.token_service import Token
 from config import credentials
 from fastapi.requests import Request
 from fastapi import HTTPException
