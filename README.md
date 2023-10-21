@@ -11,6 +11,7 @@ Antes de executar a API, certifique-se de que você possui o seguinte software i
 - Python 3.7 ou superior
 - FastAPI
 - MongoDB
+- Docker
 
 Recomenda-se a criação de um ambiente virtual Python para isolar as dependências do projeto. Você pode criar um ambiente virtual usando o seguinte comando:
 
@@ -48,18 +49,47 @@ MONGODB_URL = "mongodb://localhost:27017/"
 
 Certifique-se de alterar a URL e o nome do banco de dados de acordo com suas configurações.
 
-## Executando a API
+## Executando a API com Docker
 
-Para iniciar a API, execute o seguinte comando a partir do diretório raiz do projeto:
+Você pode executar este projeto utilizando Docker, o que facilita a configuração do ambiente de desenvolvimento. Certifique-se de ter o Docker instalado em sua máquina.
+
+1. Clone o repositório do projeto:
 
 ```bash
-uvicorn main:app --reload
+git clone https://github.com/Cauan2305/Crud-Todo-fastapi.git
 ```
 
-A API estará disponível em `http://localhost:8000`. Você pode acessar a documentação interativa da API em `http://localhost:8000/docs` e a interface alternativa em `http://localhost:8000/redoc`.
+2. Navegue até o diretório do projeto:
 
-Certifique-se de usar um cliente HTTP, como o [httpie](https://httpie.io/) ou [curl](https://curl.se/), para interagir com a API.
+```bash
+cd nomedoseuprojeto
+```
 
+3. Crie uma imagem Docker a partir do Dockerfile incluído no projeto. Substitua "nomedocontainer" pelo nome que você deseja para o contêiner e "versao" pela versão desejada.
+
+```bash
+docker build -t nomedocontainer:versao .
+```
+
+4. Inicie um contêiner Docker a partir da imagem que você criou. Substitua "nomedocontainer" e "versao" pelos mesmos valores usados na etapa anterior.
+
+```bash
+docker run -d -p 8000:80 nomedocontainer:versao
+```
+
+Agora, a API FastAPI TODO App estará em execução dentro do contêiner Docker. Você pode acessá-la em `http://localhost:8000`.
+
+Para parar o contêiner Docker, você pode listar os contêineres em execução:
+
+```bash
+docker ps
+```
+
+Em seguida, pare o contêiner com o comando `docker stop CONTAINER_ID`, onde `CONTAINER_ID` é o ID do contêiner listado.
+
+Lembre-se de que, para interagir com a API, você ainda pode usar um cliente HTTP, como o [httpie](https://httpie.io/) ou [curl](https://curl.se/), conforme mencionado na seção original. Contribuições são bem-vindas e boa sorte com o seu projeto!
+
+Se você tiver alguma dúvida ou precisar de ajuda adicional, não hesite em entrar em contato.
 
 ## Contribuição
 
