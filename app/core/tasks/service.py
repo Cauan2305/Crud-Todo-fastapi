@@ -22,8 +22,8 @@ class TaskService:
         document.update(payload)
         return TasksDB(**document).model_dump(exclude_none=True)
     
-    def get(self,user_id:str,sort:int)->TasksDB:
-        documents=self.database.find("tasks",{"user_id":user_id},sort=[('priority',sort)])
+    def get(self,user_id:str)->TasksDB:
+        documents=self.database.find("tasks",{"user_id":user_id},sort=[('priority',1)])
         if not documents:
             raise HTTPException(
                 detail="Task Not Found",

@@ -5,3 +5,4 @@ credentials={
     "BASE_URL":os.getenv('BASE_URL','http://127.0.0.1:8000/'),
     "COOKIE_DOMAIN":os.getenv('COOKIE_DOMAIN','http://127.0.0.1')
 }
+print(credentials)

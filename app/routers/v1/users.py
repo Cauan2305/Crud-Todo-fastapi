@@ -2,15 +2,20 @@ from fastapi import APIRouter,status,Depends
 from app.core.users.models import UserUpdate,UserCreate,UsersResponseCreate,UsersResponseUpdate
 from app.core.users.service import UsersService
 from app.routers.validators.validators import validate_token
-
-
+from fastapi.responses import Response
+from datetime import datetime,timedelta
 
 router = APIRouter(prefix="/v1")
 service=UsersService()
 
 @router.post("/",response_model=UsersResponseCreate)
-async def create(payload:UserCreate):
-    return service.create(payload)
+async def create(payload:UserCreate,response:Response):
+    result,token=service.create(payload)
+    expire=(datetime.now()+timedelta(1)).strftime('%a, %d %b %Y %H:%M:%S GMT')
+    response.set_cookie(key="Authorization",value=token,expires=expire,path="/")
+    response.headers["Authorization"]=f"Bearer {token}"
+    response.headers["Expires"]=expire
+    return result
 
 
 @router.put("/",response_model=UsersResponseUpdate,response_model_exclude_none=True)

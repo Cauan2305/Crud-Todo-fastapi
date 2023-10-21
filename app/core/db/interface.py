@@ -11,5 +11,5 @@ class DatabaseInterface(ABC):
         pass
 
     @abstractmethod
-    def find(self,table_name:str,query:dict,sort:dict=None):
+    def find(self,table_name:str,query:dict,sort:list[tuple]=None):
         pass

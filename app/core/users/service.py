@@ -5,6 +5,7 @@ from config import credentials
 from fastapi import HTTPException
 from bson import ObjectId
 from datetime import datetime
+from app.core.authentication.token_service import Token
 class UsersService:
 
     def __init__(self) -> None:
@@ -15,15 +16,16 @@ class UsersService:
         data_duplicated=self.database.find("users",{"email":user.email,"status":{"$nin":['deleted']}})   
         if data_duplicated:
             raise HTTPException(detail="This Email Is Already Registered",status_code=400)
-        
+        __password=user.password
         user.password=self.system_hash.encrypt_password(user.password)
         user=user.model_dump(exclude_none=True)
-
         user['creation_date']=datetime.now().isoformat()
         user['status']="enabled"
         result=self.database.insert("users",user)
         user["id"]=str(result)
-        return UsersEntity(**user).model_dump(exclude_none=True)
+        user['password']=__password
+        token=Token().generate_token_session(user)
+        return UsersEntity(**user).model_dump(exclude_none=True),token
     
     def update(self,user:UserUpdate,user_id:str)->UserUpdate:
         if user.password:
