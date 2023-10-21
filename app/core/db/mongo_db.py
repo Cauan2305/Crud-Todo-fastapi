@@ -23,7 +23,7 @@ class Database(DatabaseInterface):
             raise DbErrorOperations("Id Not Found")
         return result
     
-    def find(self, table_name: str, query: dict,sort:list[tuple]=None) -> List[Dict] | None:
+    def find(self, table_name: str, query: dict,sort:list[tuple]=None) -> Optional[List[Dict]]:
         if sort:
             return list(self._db_client[table_name].find(query).sort(sort))
 

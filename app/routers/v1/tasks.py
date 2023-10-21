@@ -15,5 +15,5 @@ async def update(payload:TasksRequestUpdate,user_id:str=Depends(validate_token))
     return service.update(payload,user_id)
 
 @router.get("/",response_model=list[TasksResponse],response_model_exclude_none=True)
-async def update(sort:int=Literal[1,-1],user_id:str=Depends(validate_token)):
-    return service.get(user_id,sort)
+async def update(user_id:str=Depends(validate_token)):
+    return service.get(user_id)
